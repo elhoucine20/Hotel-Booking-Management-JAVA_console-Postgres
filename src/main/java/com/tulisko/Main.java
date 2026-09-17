@@ -15,4 +15,5 @@ public class Main {
         DatabaseConnection.getInstance().getConnection();
 
     }
+
 }
