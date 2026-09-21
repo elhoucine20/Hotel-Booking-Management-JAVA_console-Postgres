@@ -10,7 +10,7 @@ public class DatabaseInitializer {
 
     public static void initialize(){
 
-        Connection connection = DatabaseConnection.getInstance().getConnection();
+        //Connection connection = DatabaseConnection.getInstance().getConnection();
 
         Flyway flyway = Flyway.configure().
                 dataSource(DatabaseConfig.url,DatabaseConfig.userName,DatabaseConfig.password).load();

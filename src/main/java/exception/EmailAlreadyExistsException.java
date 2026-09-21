@@ -1,10 +1,10 @@
 package exception;
 
-public class InvalidReservationException extends Exception {
+public class EmailAlreadyExistsException extends Exception {
 
     private String message;
 
-    public InvalidReservationException(String message) {
+    public EmailAlreadyExistsException(String message) {
         this.message = message;
     }
 
@@ -12,4 +12,5 @@ public class InvalidReservationException extends Exception {
     public String getMessage() {
         return message;
     }
+
 }
