@@ -22,7 +22,7 @@ public class AuthService {
         this.passwordService = new PasswordService();
     }
 
-    public void registerService(Scanner scanner,String name, String email, RoleUser role, String password)throws Exception{
+    public Boolean registerService(Scanner scanner,String name, String email, RoleUser role, String password)throws Exception{
         try {
             email = email.toLowerCase();
             ValidationUtils.ValidateString(name);
@@ -40,8 +40,10 @@ public class AuthService {
             userRepository.save(user);
             //Menus.menuApresLogin(scanner,user);
 
+            return true;
         }catch (Exception e){
             System.out.println(e.getMessage());
+            return false;
         }
 
     }

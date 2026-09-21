@@ -4,16 +4,21 @@ import model.enums.RoomStatus;
 import model.enums.RoomType;
 
 import java.math.BigDecimal;
+import java.util.UUID;
 
 public class Room {
+    private UUID id;
     private String roomNumber;
     private RoomType type; // SINGLE or DOUBLE or SUITE
     private int capacity;
+    private UUID user_id;
     private BigDecimal pricePerNight;
     private RoomStatus status;  //AVAILABLE  or MAINTENANCE
 
 
-    public Room(String roomNumber, RoomType type, int capacity, BigDecimal pricePerNight, RoomStatus status) {
+    public Room(UUID id,UUID user_id,String roomNumber, RoomType type, int capacity, BigDecimal pricePerNight, RoomStatus status) {
+        this.id = id;
+        this.user_id = user_id;
         this.roomNumber = roomNumber;
         this.type = type;
         this.capacity = capacity;
@@ -60,5 +65,22 @@ public class Room {
 
     public void setStatus(RoomStatus status) {
         this.status = status;
+    }
+
+
+    public UUID getId() {
+        return id;
+    }
+
+    public void setId(UUID id) {
+        this.id = id;
+    }
+
+    public UUID getUser_id() {
+        return user_id;
+    }
+
+    public void setUser_id(UUID user_id) {
+        this.user_id = user_id;
     }
 }

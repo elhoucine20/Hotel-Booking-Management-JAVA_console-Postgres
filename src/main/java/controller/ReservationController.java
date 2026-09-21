@@ -1,7 +1,7 @@
 package controller;
 
 import model.User;
-import repository.impl.InMemoryRoomRepository;
+import repository.impl.RoomRepository;
 import service.ReservationService;
 import util.InputUtils;
 import util.Menus;
@@ -10,13 +10,13 @@ import java.util.Scanner;
 
 public class ReservationController {
 
-    InMemoryRoomRepository romRepository;
+    RoomRepository romRepository;
 
     public void reservationServiceAffichier(User user,ReservationService reservationService){
         reservationService.myReservationsService(user);
     }
 
-    public void createReservationController(Scanner scanner , User user, InMemoryRoomRepository roomRepository, ReservationService reservationService){
+    public void createReservationController(Scanner scanner , User user, RoomRepository roomRepository, ReservationService reservationService){
 
         romRepository = roomRepository;
         try {
@@ -37,7 +37,7 @@ public class ReservationController {
     public void cancelReservationController(Scanner scanner,User user,ReservationService reservationService) throws Exception {
         String codeReservation = InputUtils.lireString(scanner,"saisir le code de reservation que tu vous avais annuller ");
         reservationService.cancelReservationService(codeReservation,user);
-        Menus.menuApresLogin(scanner,user);
+        Menus.menuClient(scanner,user);
     }
 
 

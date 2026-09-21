@@ -18,8 +18,9 @@ public class AuthController {
             String email = InputUtils.lireString(scanner,"Saisir votre email : ");
             String password = InputUtils.lireString(scanner,"Saisir votre mot de pass : ");
 
-            authService.registerService(scanner,name,email, null,password);
-            System.out.println("Inscription avec success !");
+            boolean isInscrire = authService.registerService(scanner,name,email, null,password);
+            if (isInscrire)
+             System.out.println("Inscription avec success !");
         }catch (Exception e){
             System.out.println(e.getMessage());
 
@@ -31,8 +32,13 @@ public class AuthController {
             String email = InputUtils.lireString(scanner,"Saisir votre email : ");
             String password = InputUtils.lireString(scanner,"Saisir votre mot de pass: ");
             User user = authService.loginService(email,password);
-            System.out.println("============ login avec succes ===========");
-            Menus.menuApresLogin(scanner,user);
+            if (user.getRole() == RoleUser.client){
+                System.out.println("======== Dashboard Client =======");
+                Menus.menuClient(scanner,user);
+            }else if (user.getRole() == RoleUser.admin){
+                System.out.println("======== Dashboard Admin =======");
+                Menus.menuAdmin(scanner,user);
+            }
         } catch (InvalidCredentialsException e) {
             System.out.println(e.getMessage());
         }catch (Exception e){

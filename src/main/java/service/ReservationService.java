@@ -6,15 +6,13 @@ import model.enums.ReservationStatus;
 import model.enums.RoomStatus;
 import repository.ReservationRepository;
 import repository.impl.InMemoryReservationRepository;
-import repository.impl.InMemoryRoomRepository;
-import util.Menus;
+import repository.impl.RoomRepository;
 import util.ValidationUtils;
 
 import java.math.BigDecimal;
 import java.time.DateTimeException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
 
@@ -22,14 +20,14 @@ import java.util.*;
 public class ReservationService {
 
     InMemoryReservationRepository reservationRepository = new ReservationRepository();
-    InMemoryRoomRepository romRepository;
+    RoomRepository romRepository;
     private static int counter=1;
 
     public void myReservationsService(User user){
         reservationRepository.affichierReservationsUser(user);
     }
 
-    public void createReservationService(InMemoryRoomRepository roomRepository,User user, String roomNumber, int numberOfGuests, String dateDebut
+    public void createReservationService(RoomRepository roomRepository, User user, String roomNumber, int numberOfGuests, String dateDebut
             , String dateFin){
         romRepository = roomRepository;
         List<Reservation> reservations = new ArrayList<>();   // list de reservations filtrer par status confirmed  et auusi by room number

@@ -1,15 +1,17 @@
 package controller;
 
-import repository.impl.InMemoryRoomRepository;
+import repository.impl.RoomRepository;
 import service.RoomService;
 
 public class RoomController {
 
-    public void serviceAffichierRooms(InMemoryRoomRepository roomRepo,RoomService romService){
+
+
+    public void serviceAffichierRooms(RoomRepository roomRepo, RoomService romService){
 
         romService.repositoryAffichierRooms(roomRepo);
     }
-    public void serviceAffichierRoomsAvailable(InMemoryRoomRepository roomRepo, RoomService romService){
+    public void serviceAffichierRoomsAvailable(RoomRepository roomRepo, RoomService romService){
         romService.setRoomsAvailableRepository(roomRepo);
     }
 

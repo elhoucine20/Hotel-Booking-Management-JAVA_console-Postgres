@@ -4,8 +4,8 @@ import controller.AuthController;
 import controller.ReservationController;
 import controller.RoomController;
 import model.User;
-import repository.RoomRepository;
-import repository.impl.InMemoryRoomRepository;
+import repository.JdbcRoomRepository;
+import repository.impl.RoomRepository;
 import service.ReservationService;
 import service.RoomService;
 
@@ -19,17 +19,16 @@ public class Menus {
     static  AuthController  authController = new AuthController();
     static RoomController roomController = new RoomController();
     static ReservationController reservationController = new ReservationController();
-    static InMemoryRoomRepository roomRepository = new RoomRepository();
+    static RoomRepository roomRepository = new JdbcRoomRepository();
     static RoomService roomService = new RoomService();
     static ReservationService reservationService = new ReservationService();
 
 
-    public static void menuApresLogin(Scanner scan, User user) throws Exception {
+    public static void menuClient(Scanner scan, User user) throws Exception {
         boolean isTrue = true;
         while (isTrue){
-            System.out.println("================================");
             //if (user!=null)
-            System.out.println("Logged in as: "+user.getFullName());
+            System.out.println(" === Welcome : "+user.getFullName()+" === ");
             //else  Menus.menuAuth(scan);
             System.out.println("================================");
 
@@ -46,15 +45,15 @@ public class Menus {
             int choixBeforLogin = scan.nextInt();
 
             switch (choixBeforLogin){
-                case 1: roomController.serviceAffichierRoomsAvailable( roomRepository,roomService); Menus.menuApresLogin(scan,user); break;
-                case 2: roomController.serviceAffichierRooms( roomRepository,roomService); Menus.menuApresLogin(scan,user); break;
+                case 1: roomController.serviceAffichierRoomsAvailable( roomRepository,roomService); break;
+                case 2: roomController.serviceAffichierRooms( roomRepository,roomService); break;
                 case 3: reservationController.createReservationController(scan,user, roomRepository,reservationService);break;
                 case 4: reservationController.reservationServiceAffichier(user,reservationService);break;
                 case 5: reservationController.updateReservationController(scan,reservationService);break;
                 case 6: reservationController.cancelReservationController(scan,user,reservationService);break;
               //  case 7: authController.verifierProfileController(scan,user);break;
                 //case 8: authController.changePasswordController(scan,user);break;
-                case 9: System.out.println("Logout"); Menus.menuAuth(scan) ; break;
+                case 9: System.out.println("Logout"); isTrue = false; Menus.menuAuth(scan) ; break;
                 case 0: System.out.println("Exit"); isTrue = false; break;
                 default:
                     System.out.println("s'il vous plais saisir une choix correct!!");break;
@@ -101,4 +100,43 @@ public class Menus {
         }, 0, 23, TimeUnit.HOURS);
 
     }
+
+
+
+    public static void menuAdmin(Scanner scan, User user) throws Exception {
+        boolean isTrue = true;
+        while (isTrue){
+            System.out.println(" === Welcome : "+user.getFullName()+" === ");
+            System.out.println("==============================");
+
+            System.out.println("1. Create Room");
+            System.out.println("2. Update Room");
+            System.out.println("3. Delete Room");
+            System.out.println("4. All Rooms");
+            System.out.println("5. Update Reservation");
+            System.out.println("6. Update profile");
+            System.out.println("7. Change password");
+            System.out.println("8. Logout");
+            System.out.println("0. Exit");
+            int choixBeforLogin = scan.nextInt();
+
+            switch (choixBeforLogin){
+                case 1:
+                    System.out.println("create rooom !!!!!"); break;
+                case 2:  System.out.println("udate rooom !!!!!"); break;
+                case 3:  System.out.println("delete rooom !!!!!");break;
+                case 4: System.out.println("all roooms !!!!!");break;
+                case 5:  System.out.println("update reservarion statu ");break;
+                case 6:  System.out.println("update profile!");break;
+                case 7:  System.out.println("change password");break;
+                case 8: System.out.println("Logout"); isTrue = false; Menus.menuAuth(scan) ; break;
+                case 0: System.out.println("Exit"); isTrue = false; break;
+                default:
+                    System.out.println("s'il vous plais saisir une choix correct!!");break;
+
+            }
+
+        }
+    }
+
 }

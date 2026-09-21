@@ -1,15 +1,15 @@
 package service;
 
-import repository.impl.InMemoryRoomRepository;
+import repository.impl.RoomRepository;
 
 public class RoomService {
 
 
-    public void repositoryAffichierRooms(InMemoryRoomRepository roomRepository){
+    public void repositoryAffichierRooms(RoomRepository roomRepository){
         roomRepository.afichierRooms();
     }
 
-    public void setRoomsAvailableRepository(InMemoryRoomRepository roomRepository){
+    public void setRoomsAvailableRepository(RoomRepository roomRepository){
         roomRepository.afichierRoomsAvailable();
     }
 
