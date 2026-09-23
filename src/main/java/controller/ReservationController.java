@@ -1,11 +1,13 @@
 package controller;
 
+import model.Reservation;
 import model.User;
 import repository.impl.RoomRepository;
 import service.ReservationService;
 import util.InputUtils;
 import util.Menus;
 
+import java.util.List;
 import java.util.Scanner;
 
 public class ReservationController {
@@ -26,47 +28,52 @@ public class ReservationController {
             System.out.println(e.getMessage());
         }
     }
-/*
-    public void reservationServiceAffichier(User user,ReservationService reservationService){
-        reservationService.myReservationsService(user);
-    }
 
-    public void createReservationController(Scanner scanner , User user, RoomRepository roomRepository, ReservationService reservationService){
+    public void allReservationsUserController(User user) {
 
-        romRepository = roomRepository;
-        try {
-            // String reservationCode  = InputUtils.lireString(scanner,"Saisir code de Reservation :");
-            String roomNumber  = InputUtils.lireString(scanner,"Saisir Room Number :");
-            int numberOfGuests  = InputUtils.lireInt(scanner,"Saisir Number Of Guests :");
-            //long numberOfNighits  = InputUtils.lireLong(scanner,"Saisir Number Of Nights :");
-            String dateDebut = InputUtils.lireString(scanner,"saisie la date de checkIn (slvp sous form 'YYYY,MM,DD')");
-            String dateFin =InputUtils.lireString(scanner,"saisie la date de checkOut (slvp sous form 'YYYY,MMM,DD')");
-            reservationService.createReservationService(roomRepository,user,roomNumber,numberOfGuests,dateDebut,dateFin);
-
-        }catch (Exception e){
-            System.out.println(e.getMessage());
+        List<Reservation> reservations =
+                reservationService.allReservationsUserService(user);
+        System.out.println("========== MES RESERVATIONS ==========");
+        if (reservations.isEmpty()) {
+            System.out.println("Vous n'avez aucune reservation.");
+            return;
         }
+        for (Reservation reservation : reservations) {
 
+            System.out.println("Code : " + reservation.getReservationCode()+ " | Check-in : " + reservation.getCheckIn()+ " | Check-out : " + reservation.getCheckOut()
+                            + " | Guests : " + reservation.getNumberOfGuests()+ " | Nuits : " + reservation.getNumberOfNights()
+                            + " | Total : " + reservation.getTotalPrice() + " | Status : " + reservation.getStatus()
+            );
+        }
     }
 
-    public void cancelReservationController(Scanner scanner,User user,ReservationService reservationService) throws Exception {
-        String codeReservation = InputUtils.lireString(scanner,"saisir le code de reservation que tu vous avais annuller ");
-        reservationService.cancelReservationService(codeReservation,user);
-        Menus.menuClient(scanner,user);
-    }
-
-
-    public void updateReservationController(Scanner scanner,ReservationService reservationService){
-        String code = InputUtils.lireString(scanner,"saisir code de reservation : ");
-        String roomNumber = InputUtils.lireString(scanner,"saisir roomNumber : ");
-        int numberOfQuests = InputUtils.lireInt(scanner,"saisir number of guests : ");
+    public void cancelReservationController(Scanner scanner, User user) {
         try {
-            reservationService.updateReservationService(code,roomNumber,numberOfQuests);
-        }catch (Exception e){
+            String codeReservation = InputUtils.lireString(scanner, "Saisir le code de reservation : ");
+            if (reservationService.cancelReservationService(codeReservation, user)) {
+                System.out.println("Reservation annuler avec success !!");
+            } else {
+                System.out.println("Reservation introuvable ou elle ne vous appartient pas");
+            }
+        } catch (Exception e) {
             System.out.println(e.getMessage());
         }
     }
 
- */
 
+    public void updateReservationController(Scanner scanner, User user) {
+        try {
+            String codeReservation = InputUtils.lireString(scanner, "Saisir le code de reservation : ");
+            String roomNumber = InputUtils.lireString(scanner, "Saisir nouvelle number de room : ");
+            int numberOfGuests = InputUtils.lireInt(scanner, "Saisir nouvelle  number of guests : ");
+
+            if (reservationService.updateReservationService(user, codeReservation, roomNumber, numberOfGuests)) {
+                System.out.println("reservation updated avec success !!");
+            } else {
+                System.out.println("impossible de modifier la reservatioN");
+            }
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+    }
 }

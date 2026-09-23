@@ -11,17 +11,27 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.time.LocalDate;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 public class JdbcReservationRepository implements ReservationRepository {
 
     Connection connection = DatabaseConnection.getInstance().getConnection();
     @Override
-    public void allReservationsUser(User user) {
-
+    public List<Reservation> allReservationsUser(User user) {
+        List<Reservation> reservations = new ArrayList<>();
+        String sql = "SELECT * FROM reservations WHERE user_id = ? ";
+        try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+            preparedStatement.setObject(1, user.getId());
+            ResultSet resultSet = preparedStatement.executeQuery();
+            while (resultSet.next()) {
+                // prochaine étape : récupérer les données
+                Reservation reservation = ReservationUtils.mapReservation(resultSet);
+                reservations.add(reservation);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return reservations;
     }
 
     @Override
@@ -35,18 +45,70 @@ public class JdbcReservationRepository implements ReservationRepository {
         }catch (Exception e){e.printStackTrace();}
         return false;
     }
+
     @Override
-    public boolean cancelReservationRepository(String codeReservation, User user) {
+    public boolean cancelReservationRepository(String codeReservation, User user
+    ) {
+        String sql = "UPDATE reservations " +
+                "SET reservationStatus = 'CANCELLED' " +
+                "WHERE reservationCode = ? " +
+                "AND user_id = ?";
+
+        try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+            preparedStatement.setString(1, codeReservation);
+            preparedStatement.setObject(2, user.getId());
+            int rows = preparedStatement.executeUpdate();
+            return rows == 1;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
         return false;
     }
 
     @Override
-    public boolean updateReservationRepository(String code, String roomNumber, int numberOfGuests, BigDecimal totalPrice) {
+    public boolean updateReservationRepository(
+            String code,
+            String roomNumber,
+            int numberOfGuests,
+            BigDecimal totalPrice
+    ) {
+
+        String sql = "UPDATE reservations r " +
+                "SET room_id = room.id, " +
+                "numberOfGuests = ?, " +
+                "total_amount = ? " +
+                "FROM rooms room " +
+                "WHERE r.reservationCode = ? " +
+                "AND room.roomNumber = ?";
+
+        try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+            preparedStatement.setInt(1, numberOfGuests);
+            preparedStatement.setBigDecimal(2, totalPrice);
+            preparedStatement.setString(3, code);
+            preparedStatement.setString(4, roomNumber);
+            int rows = preparedStatement.executeUpdate();
+            return rows == 1;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
         return false;
     }
 
     @Override
     public Reservation findReservationsByCode(String code) {
+
+        String sql = "SELECT * FROM reservations WHERE reservationCode = ?";
+        try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+            preparedStatement.setString(1, code);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            if (resultSet.next()) {
+                return ReservationUtils.mapReservation(resultSet);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         return null;
     }
 

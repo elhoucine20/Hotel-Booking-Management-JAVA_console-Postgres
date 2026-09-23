@@ -50,9 +50,9 @@ public class Menus {
                 case 2: roomController.allRoomsController();
                      break;
                 case 3: reservationController.createReservationController(scan,user);break;
-                //case 4: reservationController.reservationServiceAffichier(user,reservationService);break;
-                //case 5: reservationController.updateReservationController(scan,reservationService);break;
-                //case 6: reservationController.cancelReservationController(scan,user,reservationService);break;
+                case 4: reservationController.allReservationsUserController(user);break;
+                case 5: reservationController.updateReservationController(scan,user);break;
+                case 6: reservationController.cancelReservationController(scan,user);break;
               //  case 7: authController.verifierProfileController(scan,user);break;
                 //case 8: authController.changePasswordController(scan,user);break;
                 case 9: System.out.println("Logout"); isTrue = false; Menus.menuAuth(scan) ; break;

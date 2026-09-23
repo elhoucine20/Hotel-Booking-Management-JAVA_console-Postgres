@@ -60,4 +60,5 @@ public class ReservationUtils {
                 totalPrice,
                 status
         );
-    }}
+    }
+}

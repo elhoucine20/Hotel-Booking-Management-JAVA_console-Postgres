@@ -14,6 +14,7 @@ import java.math.BigDecimal;
 import java.time.DateTimeException;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
@@ -61,11 +62,55 @@ public class ReservationService {
         UUID reservationId = UUID.randomUUID();
         UUID userId = user.getId();
         UUID roomId = room.getId();
-        String reservationCode = reservationRepository.generateReservationCode();
         ReservationStatus status = ReservationStatus.CONFIRMED;
-
+        String reservationCode = reservationRepository.generateReservationCode();
         Reservation reservation = new Reservation(reservationId, reservationCode, userId, roomId, checkIn, checkOut, numberOfGuests, numberOfNights, totalPrice, status);
         return reservationRepository.saveReservationRepository(reservation);
+    }
+
+    public List<Reservation> allReservationsUserService(User user) {
+        return reservationRepository.allReservationsUser(user);
+    }
+
+    public boolean cancelReservationService(String codeReservation, User user) {
+        return reservationRepository.cancelReservationRepository(codeReservation, user);
+    }
+
+
+    public boolean updateReservationService(User user, String codeReservation, String roomNumber, int numberOfGuests) {
+
+        //  verifier la reservation existe
+        Reservation reservation = reservationRepository.findReservationsByCode(codeReservation);
+        if (reservation == null) {
+            System.out.println("Cette reservation n'existe pas !!");
+            return false;
+        }
+
+        // verifier la reservation appartient a l'user
+        if (!reservation.getUserId().equals(user.getId())) {
+            System.out.println("Cette reservation inconnu !!");
+            return false;
+        }
+        // verifier la nouvelle room existe
+        Optional<Room> roomOptional = roomRepository.findByNumber(roomNumber);
+        if (roomOptional.isEmpty()) {
+            System.out.println("cette rooom n'existe pas !!");
+            return false;
+        }
+        Room room = roomOptional.get();
+        // verifier la capacity
+        if (numberOfGuests <= 0 || numberOfGuests > room.getCapacity()) {
+            System.out.println("nombre de personnes depasser la capacity de room !!");
+            return false;
+        }
+
+        // calculer le nombre des nights
+        long numberOfNights = ChronoUnit.DAYS.between(reservation.getCheckIn(), reservation.getCheckOut());
+        // calculer la nouvelle price
+        BigDecimal totalPrice = room.getPricePerNight().multiply(BigDecimal.valueOf(numberOfNights));
+
+        // update reservation
+        return reservationRepository.updateReservationRepository(codeReservation, roomNumber, numberOfGuests, totalPrice);
     }
 /*
     public void myReservationsService(User user){
