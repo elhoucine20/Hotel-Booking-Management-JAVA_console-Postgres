@@ -53,4 +53,8 @@ public class RoomService {
         return  roomRepository.update(room);
     }
 
+    public List<Room> availableRoomsService(){
+       return roomRepository.findAvailable();
+    }
+
 }

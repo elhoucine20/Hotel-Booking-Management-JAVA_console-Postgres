@@ -4,24 +4,69 @@ import model.Room;
 import model.User;
 import model.enums.ReservationStatus;
 import model.enums.RoomStatus;
-import repository.ReservationRepository;
-import repository.impl.InMemoryReservationRepository;
+import repository.JdbcReservationRepository;
+import repository.JdbcRoomRepository;
+import repository.impl.ReservationRepository;
 import repository.impl.RoomRepository;
 import util.ValidationUtils;
 
 import java.math.BigDecimal;
 import java.time.DateTimeException;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
-import java.util.*;
+import java.util.Map;
+import java.util.Optional;
+import java.util.UUID;
 
 
 public class ReservationService {
+    private RoomRepository roomRepository = new JdbcRoomRepository();
+    private ReservationRepository reservationRepository = new JdbcReservationRepository();
 
-    InMemoryReservationRepository reservationRepository = new ReservationRepository();
-    RoomRepository romRepository;
-    private static int counter=1;
+    public boolean createReservationService(User user,String roomNumber,int numberOfGuests, String dateDebut,String dateFin){
+
+        Optional<Room> roomOptionel = roomRepository.findByNumber(roomNumber);
+        if (roomOptionel.isEmpty()) {
+            System.out.println("Cette room n'existe pas !!");
+            return false;
+        }
+        Room room = roomOptionel.get();
+        if (room.getStatus() == RoomStatus.MAINTENANCE) {
+            System.out.println("Cette room pas disponible !!");
+            return false;
+        }
+        if (numberOfGuests <= 0 || numberOfGuests > room.getCapacity()) {
+            System.out.println("Le nombre de personnes n'adapte  pas avec la capacity de room !!");
+            return false;
+        }
+        LocalDate checkIn = ValidationUtils.parseDate(dateDebut);
+        LocalDate checkOut = ValidationUtils.parseDate(dateFin);
+        try {
+            ValidationUtils.ValidateLesDates(checkIn, checkOut);
+        } catch (DateTimeException e) {
+            System.out.println(e.getMessage());
+            return false;
+        }
+        long numberOfNights = ChronoUnit.DAYS.between(checkIn, checkOut);
+        Map<LocalDate, LocalDate> reservations = reservationRepository.findLesDatesReservationsByRoom(roomNumber);
+        for (Map.Entry<LocalDate, LocalDate> reservation : reservations.entrySet()) {
+            LocalDate reservedIn = reservation.getKey();
+            LocalDate reservedOut = reservation.getValue();
+            if (checkIn.isBefore(reservedOut) && checkOut.isAfter(reservedIn)) {
+                System.out.println("Cette room est deja reserver pour dans ce periode "+checkIn+" - "+checkOut+" !!");
+                return false;
+            }
+        }
+        BigDecimal totalPrice = room.getPricePerNight().multiply(BigDecimal.valueOf(numberOfNights));
+        UUID reservationId = UUID.randomUUID();
+        UUID userId = user.getId();
+        UUID roomId = room.getId();
+        String reservationCode = reservationRepository.generateReservationCode();
+        ReservationStatus status = ReservationStatus.CONFIRMED;
+
+        Reservation reservation = new Reservation(reservationId, reservationCode, userId, roomId, checkIn, checkOut, numberOfGuests, numberOfNights, totalPrice, status);
+        return reservationRepository.saveReservationRepository(reservation);
+    }
 /*
     public void myReservationsService(User user){
         reservationRepository.affichierReservationsUser(user);

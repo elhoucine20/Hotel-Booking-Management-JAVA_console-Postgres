@@ -10,7 +10,22 @@ import java.util.Scanner;
 
 public class ReservationController {
 
-    RoomRepository romRepository;
+    ReservationService reservationService = new ReservationService();
+    public void createReservationController(Scanner scanner, User user) {
+
+        try {
+            String roomNumber = InputUtils.lireString(scanner, "Saisir roomNumber : ");
+            int numberOfGuests = InputUtils.lireInt(scanner, "Saisir Number OfGuests : ");
+            String dateDebut = InputUtils.lireString(scanner, "Saisir la date de checkIn (YYYY,MM,DD) : ");
+            String dateFin = InputUtils.lireString(scanner, "Saisir la date de checkOut (YYYY,MM,DD) : ");
+
+            if (reservationService.createReservationService(user,roomNumber,numberOfGuests, dateDebut,dateFin)) {
+                System.out.println("Reservation cree avec success !!");
+            }
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+    }
 /*
     public void reservationServiceAffichier(User user,ReservationService reservationService){
         reservationService.myReservationsService(user);

@@ -64,9 +64,10 @@ public class RoomController {
 
     public void allRoomsController(){
         System.out.println("=============== ROOMS ==============");
-         for (Room room: roomService.findAllService()){
-             System.out.println("Number -> '"+room.getRoomNumber()+"' : Type -> '"+room.getType()+"' : Capacity -> '"+room.getCapacity()+"' : Price By Night -> '"+room.getPricePerNight()+"' : Statu -> '"+room.getStatus()+"'");
-         }
+        if (roomService.findAllService().isEmpty())
+            System.out.println("aucun room !!");
+        else
+            this.affichier(roomService.findAllService());
     }
 
     public void updateRoomController(Scanner scanner,User user){
@@ -128,5 +129,19 @@ public class RoomController {
         }catch (Exception e){
             System.out.println(e.getMessage());
         }
+    }
+
+    public void availableRoomsController(){
+        if (roomService.availableRoomsService().isEmpty())
+            System.out.println("aucun room !!");
+        else
+            this.affichier(roomService.availableRoomsService());
+    }
+
+    private void affichier(List<Room> rooms){
+        for (Room room: rooms){
+            System.out.println("Number -> '"+room.getRoomNumber()+"' : Type -> '"+room.getType()+"' : Capacity -> '"+room.getCapacity()+"' : Price By Night -> '"+room.getPricePerNight()+"' : Statu -> '"+room.getStatus()+"'");
+        }
+
     }
 }

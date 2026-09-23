@@ -55,6 +55,17 @@ public class RoomUtils {
         return preparedStatement.executeUpdate();
     }
 
+    public static int saveRoomUtil(PreparedStatement statement,Room room) throws SQLException {
+        statement.setObject(1, room.getId());
+        statement.setString(2, room.getRoomNumber());
+        statement.setObject(3, room.getUser_id());
+        statement.setString(4, room.getType().name());
+        statement.setBigDecimal(5, room.getPricePerNight());
+        statement.setString(6, room.getStatus().name());
+        statement.setInt(7,room.getCapacity());
+        return statement.executeUpdate();
+    }
+
     public static boolean validatePrice(BigDecimal price){
         if (price == null || price.compareTo(BigDecimal.ZERO) <= 0)
             throw new IllegalArgumentException("s'il vous plais le prix doit etre superieur a 0 !!");

@@ -11,32 +11,28 @@ public class Reservation {
     private UUID id;
     private String reservationCode;
     private UUID userId;
-    private  String roomNumber;
+    private  UUID room_id;
     private LocalDate checkIn;
     private LocalDate checkOut;
     private int numberOfGuests;
     private long numberOfNights;
     private BigDecimal totalPrice;
     private ReservationStatus status;
-    private LocalDateTime createdAt;
-
 
     //======================== Constructer ===========================
 
-
-    public Reservation(UUID id, String reservationCode, UUID userId, String roomNumber, LocalDate checkIn, LocalDate checkOut,
-                       int numberOfGuests, long numberOfNights, BigDecimal totalPrice, ReservationStatus status, LocalDateTime createdAt) {
+    public Reservation(UUID id, String reservationCode, UUID userId, UUID room_id, LocalDate checkIn, LocalDate checkOut,
+                       int numberOfGuests, long numberOfNights, BigDecimal totalPrice, ReservationStatus status) {
         this.id = id;
         this.reservationCode = reservationCode;
         this.userId = userId;
-        this.roomNumber = roomNumber;
+        this.room_id = room_id;
         this.checkIn = checkIn;
         this.checkOut = checkOut;
         this.numberOfGuests = numberOfGuests;
         this.numberOfNights = numberOfNights;
         this.totalPrice = totalPrice;
         this.status = status;
-        this.createdAt = createdAt;
     }
 
     //======================== getter and setter ===========================
@@ -57,12 +53,6 @@ public class Reservation {
     }
     public void setUserId(UUID userId) {
         this.userId = userId;
-    }
-    public String getRoomNumber() {
-        return roomNumber;
-    }
-    public void setRoomNumber(String roomNumber) {
-        this.roomNumber = roomNumber;
     }
     public LocalDate getCheckIn() {
         return checkIn;
@@ -100,13 +90,12 @@ public class Reservation {
     public void setStatus(ReservationStatus status) {
         this.status = status;
     }
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
+    public UUID getRoom_id() {
+        return room_id;
     }
-    public void setCreatedAt(LocalDateTime createdAt) {
-        this.createdAt = createdAt;
+
+    public void setRoom_id(UUID room_id) {
+        this.room_id = room_id;
     }
     //===========================  ============================
-
-
 }

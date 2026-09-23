@@ -45,11 +45,11 @@ public class Menus {
             int choixBeforLogin = scan.nextInt();
 
             switch (choixBeforLogin){
-                case 1:// roomController.serviceAffichierRoomsAvailable( roomRepository,roomService);
+                case 1: roomController.availableRoomsController();
                      break;
-                case 2:// roomController.serviceAffichierRooms( roomRepository,roomService);
+                case 2: roomController.allRoomsController();
                      break;
-               // case 3: reservationController.createReservationController(scan,user, roomRepository,reservationService);break;
+                case 3: reservationController.createReservationController(scan,user);break;
                 //case 4: reservationController.reservationServiceAffichier(user,reservationService);break;
                 //case 5: reservationController.updateReservationController(scan,reservationService);break;
                 //case 6: reservationController.cancelReservationController(scan,user,reservationService);break;

@@ -27,20 +27,12 @@ public class JdbcRoomRepository implements repository.impl.RoomRepository {
 
         try (PreparedStatement statement = connection.prepareStatement(sql)) {
 
-            statement.setObject(1, room.getId());
-            statement.setString(2, room.getRoomNumber());
-            statement.setObject(3, room.getUser_id());
-            statement.setString(4, room.getType().name());
-            statement.setBigDecimal(5, room.getPricePerNight());
-            statement.setString(6, room.getStatus().name());
-            statement.setInt(7,room.getCapacity());
-            statement.executeUpdate();
-
-            return true;
+            int rows = RoomUtils.saveRoomUtil(statement,room);
+            return rows == 1;
         } catch (Exception e) {
             e.printStackTrace();
-            return false;
         }
+        return false;
     }
 
     @Override
