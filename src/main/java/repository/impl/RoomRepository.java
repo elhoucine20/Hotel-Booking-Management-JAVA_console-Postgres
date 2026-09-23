@@ -2,15 +2,23 @@ package repository.impl;
 
 import model.Room;
 
+import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 
 public interface RoomRepository {
 
-    public void afichierRooms();
-    public void afichierRoomsAvailable();
-    public  Room getroomByNumber(String NRoom);
-    public Map<UUID, Room> getRooms();
+    public boolean save(Room room);
+    public Optional<Room> findByNumber(String number);
 
-    public void save(Room room);
+    public List<Room> findAll();
+    public List<Room> findAvailable();
+    public boolean update(Room room);
+    public boolean deleteByNumber(String id);
+
+    public String generateRoomNumber();
+
+
+
 }

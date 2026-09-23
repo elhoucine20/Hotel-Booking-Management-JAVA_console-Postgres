@@ -27,16 +27,29 @@ public class InputUtils {
         return input;
     }
 
+
     public static int lireInt(Scanner scanner , String label){
         int input=0;
         try {
             System.out.print(label+" ");
             input = scanner.nextInt();
-        }catch (NumberFormatException e){
+
+        }catch (Exception e){
             // System.out.println("s'il vous plais saisir votre choix ");
             InputUtils.lireInt(scanner,label);
         }
         return input;
+    }
+
+    public static BigDecimal lireBigDecimal(Scanner scanner, String label) {
+        while (true){
+            try {
+                System.out.print(label + " ");
+                return new BigDecimal(scanner.next());
+            } catch (NumberFormatException e) {
+                System.out.println("Veuillez saisir un nombre valide.");
+            }
+        }
     }
 
     public static long lireLong(Scanner scanner , String label){

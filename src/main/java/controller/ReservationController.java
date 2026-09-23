@@ -11,7 +11,7 @@ import java.util.Scanner;
 public class ReservationController {
 
     RoomRepository romRepository;
-
+/*
     public void reservationServiceAffichier(User user,ReservationService reservationService){
         reservationService.myReservationsService(user);
     }
@@ -51,5 +51,7 @@ public class ReservationController {
             System.out.println(e.getMessage());
         }
     }
+
+ */
 
 }

@@ -22,7 +22,7 @@ public class ReservationService {
     InMemoryReservationRepository reservationRepository = new ReservationRepository();
     RoomRepository romRepository;
     private static int counter=1;
-
+/*
     public void myReservationsService(User user){
         reservationRepository.affichierReservationsUser(user);
     }
@@ -131,5 +131,8 @@ public class ReservationService {
             }
         }
     }
+
+    
+ */
 
 }

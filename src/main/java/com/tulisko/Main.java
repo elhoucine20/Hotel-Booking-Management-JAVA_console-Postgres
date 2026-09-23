@@ -26,7 +26,7 @@ public class Main {
 
         Scanner scanner = new Scanner(System.in);
 
-        Menus.updateStatuRoomReservationDynamique();
+        //Menus.updateStatuRoomReservationDynamique();
         Menus.menuAuth(scanner);
         //UserRepository userRepository = new JdbcUserRepository();
 
