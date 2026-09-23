@@ -47,12 +47,8 @@ public class JdbcReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public boolean cancelReservationRepository(String codeReservation, User user
-    ) {
-        String sql = "UPDATE reservations " +
-                "SET reservationStatus = 'CANCELLED' " +
-                "WHERE reservationCode = ? " +
-                "AND user_id = ?";
+    public boolean cancelReservationRepository(String codeReservation, User user){
+        String sql = "UPDATE reservations SET reservationStatus = 'CANCELLED' WHERE reservationCode = ? AND user_id = ?";
 
         try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
             preparedStatement.setString(1, codeReservation);
@@ -62,25 +58,14 @@ public class JdbcReservationRepository implements ReservationRepository {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
         return false;
     }
 
     @Override
-    public boolean updateReservationRepository(
-            String code,
-            String roomNumber,
-            int numberOfGuests,
-            BigDecimal totalPrice
-    ) {
+    public boolean updateReservationRepository(String code,String roomNumber, int numberOfGuests, BigDecimal totalPrice){
 
-        String sql = "UPDATE reservations r " +
-                "SET room_id = room.id, " +
-                "numberOfGuests = ?, " +
-                "total_amount = ? " +
-                "FROM rooms room " +
-                "WHERE r.reservationCode = ? " +
-                "AND room.roomNumber = ?";
+        String sql = "UPDATE reservations r SET room_id = room.id, numberOfGuests = ?, total_amount = ? " +
+                "FROM rooms room WHERE r.reservationCode = ? AND room.roomNumber = ?";
 
         try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
             preparedStatement.setInt(1, numberOfGuests);
@@ -92,7 +77,6 @@ public class JdbcReservationRepository implements ReservationRepository {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
         return false;
     }
 

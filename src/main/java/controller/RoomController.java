@@ -61,7 +61,6 @@ public class RoomController {
         }
     }
 
-
     public void allRoomsController(){
         System.out.println("=============== ROOMS ==============");
         if (roomService.findAllService().isEmpty())

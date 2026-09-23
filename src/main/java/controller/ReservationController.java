@@ -60,7 +60,6 @@ public class ReservationController {
         }
     }
 
-
     public void updateReservationController(Scanner scanner, User user) {
         try {
             String codeReservation = InputUtils.lireString(scanner, "Saisir le code de reservation : ");

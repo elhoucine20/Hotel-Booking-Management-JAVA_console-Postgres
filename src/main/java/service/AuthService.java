@@ -62,6 +62,13 @@ public class AuthService {
         return user;
     }
 
+    public boolean updateProfileService(User user, String fullName, String email){
+            ValidationUtils.ValidateEmail(email);
+            if (ValidationUtils.ValidateString(fullName)){
+                return userRepository.updateProfile(user.getId(), fullName, email);
+            }
+            return false;
+    }
 /*
 
 /*

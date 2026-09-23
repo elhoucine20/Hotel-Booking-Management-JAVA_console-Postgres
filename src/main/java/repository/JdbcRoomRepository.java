@@ -50,7 +50,6 @@ public class JdbcRoomRepository implements repository.impl.RoomRepository {
         return Optional.empty();
     }
 
-
     @Override
     public List<Room> findAll() {
 
@@ -83,8 +82,7 @@ public class JdbcRoomRepository implements repository.impl.RoomRepository {
     }
 
     @Override
-    public boolean deleteByNumber(String number)
-    {
+    public boolean deleteByNumber(String number) {
         String sql = "DELETE FROM rooms WHERE roomNumber = ?";
         try (PreparedStatement preparedStatement = connection.prepareStatement(sql)){
             preparedStatement.setString(1,number);

@@ -18,8 +18,7 @@ public class AuthController {
             String email = InputUtils.lireString(scanner,"Saisir votre email : ");
             String password = InputUtils.lireString(scanner,"Saisir votre mot de pass : ");
 
-            boolean isInscrire = authService.registerService(scanner,name,email, null,password);
-            if (isInscrire)
+            if (authService.registerService(scanner,name,email, null,password))
              System.out.println("Inscription avec success !");
         }catch (Exception e){
             System.out.println(e.getMessage());
@@ -45,21 +44,27 @@ public class AuthController {
             System.out.println(e.getMessage());
         }
     }
+
+    public void updateProfileController(Scanner scanner, User user){
+        try {
+            String fullName = InputUtils.lireString(scanner, "Saisir votre nouveau nom : ");
+            String email = InputUtils.lireString(scanner, "Saisir votre nouvel email : ");
+
+            if (authService.updateProfileService(user, fullName, email)) {
+                System.out.println("Votre profile updated avec success !!");
+            } else {
+                System.out.println("impossible de modifier votre profile !!");
+            }
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+    }
 /*
 
     public void changePasswordController(Scanner scanner,User user){
         String Npassword = InputUtils.lireString(scanner,"saisir votre nouveau password : ");
 
         authService.changePasswordService(user,Npassword);
-    }
-
-
-    public void verifierProfileController(Scanner scanner,User user){
-        String Name = InputUtils.lireString(scanner,"vrifier votre nom : ");
-        String email = InputUtils.lireString(scanner,"verifier votre email : ");
-        String phone = InputUtils.lireString(scanner,"verifier votre phone : ");
-        authService.verifierProfileService(user,Name,email,phone);
-
     }
 
  */

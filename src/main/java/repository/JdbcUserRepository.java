@@ -9,6 +9,7 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 public class JdbcUserRepository implements UserRepository {
 
@@ -18,20 +19,16 @@ public class JdbcUserRepository implements UserRepository {
     public boolean save(User user) {
 
         String sql  = "INSERT INTO users (id,full_name,email,password_hash,salt,role) VALUES (?,?,?,?,?,?)";
-
         try (
                 PreparedStatement statement = connection.prepareStatement(sql)
         ) {
-
             statement.setObject(1, user.getId());
             statement.setString(2, user.getFullName());
             statement.setString(3, user.getEmail());
             statement.setString(4, user.getPasswordHash());
             statement.setString(5, user.getSalt());
             statement.setString(6, user.getRole().name());
-
             statement.executeUpdate();
-
             return true;
 
         } catch (SQLException e) {
@@ -42,9 +39,7 @@ public class JdbcUserRepository implements UserRepository {
 
     @Override
     public Optional<User> findByEmail(String email) {
-
         String sql = "SELECT id,full_name,email,password_hash,salt,role FROM users WHERE email = ?";
-
         try (PreparedStatement statement = connection.prepareStatement(sql)){
 
             statement.setString(1,email);
@@ -74,10 +69,8 @@ public class JdbcUserRepository implements UserRepository {
         String sql = "SELECT EXISTS (SELECT 1 FROM users WHERE email = ?)";
 
         try (PreparedStatement statement = connection.prepareStatement(sql)){
-
             statement.setString(1,email);
             var resultSet = statement.executeQuery();
-
             if (resultSet.next()){
                return resultSet.getBoolean(1);
             }
@@ -90,6 +83,23 @@ public class JdbcUserRepository implements UserRepository {
     @Override
     public List<User> findAll() {
         return List.of();
+    }
+
+    @Override
+    public boolean updateProfile(UUID userId, String fullName, String email){
+
+        String sql = "UPDATE users SET full_name = ?, email = ? WHERE id = ?";
+
+        try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+            preparedStatement.setString(1, fullName);
+            preparedStatement.setString(2, email);
+            preparedStatement.setObject(3, userId);
+            int rows = preparedStatement.executeUpdate();
+            return rows == 1;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
     }
 
 }

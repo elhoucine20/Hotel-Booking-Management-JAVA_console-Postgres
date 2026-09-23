@@ -76,7 +76,6 @@ public class ReservationService {
         return reservationRepository.cancelReservationRepository(codeReservation, user);
     }
 
-
     public boolean updateReservationService(User user, String codeReservation, String roomNumber, int numberOfGuests) {
 
         //  verifier la reservation existe
@@ -113,10 +112,6 @@ public class ReservationService {
         return reservationRepository.updateReservationRepository(codeReservation, roomNumber, numberOfGuests, totalPrice);
     }
 /*
-    public void myReservationsService(User user){
-        reservationRepository.affichierReservationsUser(user);
-    }
-
     public void createReservationService(RoomRepository roomRepository, User user, String roomNumber, int numberOfGuests, String dateDebut
             , String dateFin){
         romRepository = roomRepository;

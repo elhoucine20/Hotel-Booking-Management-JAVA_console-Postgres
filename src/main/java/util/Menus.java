@@ -39,8 +39,7 @@ public class Menus {
             System.out.println("5. Update reservation");
             System.out.println("6. Cancel reservation");
             System.out.println("7. Update profile");
-            System.out.println("8. Change password");
-            System.out.println("9. Logout");
+            System.out.println("8. Logout");
             System.out.println("0. Exit");
             int choixBeforLogin = scan.nextInt();
 
@@ -53,15 +52,13 @@ public class Menus {
                 case 4: reservationController.allReservationsUserController(user);break;
                 case 5: reservationController.updateReservationController(scan,user);break;
                 case 6: reservationController.cancelReservationController(scan,user);break;
-              //  case 7: authController.verifierProfileController(scan,user);break;
-                //case 8: authController.changePasswordController(scan,user);break;
-                case 9: System.out.println("Logout"); isTrue = false; Menus.menuAuth(scan) ; break;
+                case 7: authController.updateProfileController(scan,user);break;
+                case 8: System.out.println("Logout"); isTrue = false; Menus.menuAuth(scan) ; break;
                 case 0: System.out.println("Exit"); isTrue = false; break;
                 default:
                     System.out.println("s'il vous plais saisir une choix correct!!");break;
 
             }
-
         }
     }
 
@@ -127,7 +124,7 @@ public class Menus {
                 case 2:  roomController.updateRoomController(scan,user); break;
                 case 4: roomController.allRoomsController(); break;
                 case 5:  System.out.println("update reservarion statu ");break;
-                case 6:  System.out.println("update profile!");break;
+                case 6:  authController.updateProfileController(scan,user);break;
                 case 7:  System.out.println("change password");break;
                 case 8: System.out.println("Logout"); isTrue = false; Menus.menuAuth(scan) ; break;
                 case 0: System.out.println("Exit"); isTrue = false; break;
