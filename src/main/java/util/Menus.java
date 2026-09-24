@@ -1,6 +1,7 @@
 package util;
 
 import controller.AuthController;
+import controller.PaymentController;
 import controller.ReservationController;
 import controller.RoomController;
 import model.User;
@@ -19,6 +20,7 @@ public class Menus {
     static  AuthController  authController = new AuthController();
     static RoomController roomController = new RoomController();
     static ReservationController reservationController = new ReservationController();
+    static PaymentController paymentController = new PaymentController();
     static RoomRepository roomRepository = new JdbcRoomRepository();
     static RoomService roomService = new RoomService();
     static ReservationService reservationService = new ReservationService();
@@ -40,6 +42,7 @@ public class Menus {
             System.out.println("6. Cancel reservation");
             System.out.println("7. Update profile");
             System.out.println("8. Logout");
+            System.out.println("9. Mes Payments");
             System.out.println("0. Exit");
             int choixBeforLogin = scan.nextInt();
 
@@ -52,6 +55,7 @@ public class Menus {
                 case 6: reservationController.cancelReservationController(scan,user);break;
                 case 7: authController.updateProfileController(scan,user);break;
                 case 8: System.out.println("Logout"); isTrue = false; Menus.menuAuth(scan) ; break;
+                case 9: paymentController.paymentsUserController(user);break;
                 case 0: System.out.println("Exit"); isTrue = false; break;
                 default:
                     System.out.println("s'il vous plais saisir une choix correct!!");break;

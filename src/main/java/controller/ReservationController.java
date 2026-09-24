@@ -2,6 +2,7 @@ package controller;
 
 import model.Reservation;
 import model.User;
+import model.enums.PaymentMethod;
 import model.enums.ReservationStatus;
 import repository.impl.RoomRepository;
 import service.ReservationService;
@@ -22,7 +23,20 @@ public class ReservationController {
             String dateDebut = InputUtils.lireString(scanner, "Saisir la date de checkIn (YYYY,MM,DD) : ");
             String dateFin = InputUtils.lireString(scanner, "Saisir la date de checkOut (YYYY,MM,DD) : ");
 
-            if (reservationService.createReservationService(user,roomNumber,numberOfGuests, dateDebut,dateFin)) {
+            System.out.println("Choisir la methode de payement :");
+            System.out.println("1. CASH");
+            System.out.println("2. PAYPAL");
+            int choix = InputUtils.lireInt(scanner, "Saisie votre choix : ");
+            PaymentMethod paymentMethod;
+            if (choix == 1) {
+                paymentMethod = PaymentMethod.cash;
+            } else if (choix == 2) {
+                paymentMethod = PaymentMethod.paypal;
+            } else {
+                System.out.println("votre choix invalide !");
+                return;
+            }
+            if (reservationService.createReservationService(user,roomNumber,numberOfGuests, dateDebut,dateFin,paymentMethod)) {
                 System.out.println("Reservation cree avec success !!");
             }
         } catch (Exception e) {

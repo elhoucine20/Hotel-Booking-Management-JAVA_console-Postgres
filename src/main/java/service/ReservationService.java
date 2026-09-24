@@ -1,16 +1,25 @@
 package service;
+
+import db.DatabaseConnection;
+import model.Payment;
 import model.Reservation;
 import model.Room;
 import model.User;
+import model.enums.PaymentMethod;
+import model.enums.PaymentStatus;
 import model.enums.ReservationStatus;
 import model.enums.RoomStatus;
+import repository.JdbcPaymentRepository;
 import repository.JdbcReservationRepository;
 import repository.JdbcRoomRepository;
+import repository.impl.PaymentRepository;
 import repository.impl.ReservationRepository;
 import repository.impl.RoomRepository;
 import util.ValidationUtils;
 
 import java.math.BigDecimal;
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.time.DateTimeException;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
@@ -23,8 +32,10 @@ import java.util.UUID;
 public class ReservationService {
     private RoomRepository roomRepository = new JdbcRoomRepository();
     private ReservationRepository reservationRepository = new JdbcReservationRepository();
+    private PaymentRepository paymentRepository = new JdbcPaymentRepository();
+    private Connection connection = DatabaseConnection.getInstance().getConnection();
 
-    public boolean createReservationService(User user,String roomNumber,int numberOfGuests, String dateDebut,String dateFin){
+    public boolean createReservationService(User user, String roomNumber, int numberOfGuests, String dateDebut, String dateFin, PaymentMethod paymentMethod) throws SQLException {
 
         Optional<Room> roomOptionel = roomRepository.findByNumber(roomNumber);
         if (roomOptionel.isEmpty()) {
@@ -54,7 +65,7 @@ public class ReservationService {
             LocalDate reservedIn = reservation.getKey();
             LocalDate reservedOut = reservation.getValue();
             if (checkIn.isBefore(reservedOut) && checkOut.isAfter(reservedIn)) {
-                System.out.println("Cette room est deja reserver pour dans ce periode "+checkIn+" - "+checkOut+" !!");
+                System.out.println("Cette room est deja reserver pour dans ce periode " + checkIn + " - " + checkOut + " !!");
                 return false;
             }
         }
@@ -65,7 +76,32 @@ public class ReservationService {
         ReservationStatus status = ReservationStatus.CONFIRMED;
         String reservationCode = reservationRepository.generateReservationCode();
         Reservation reservation = new Reservation(reservationId, reservationCode, userId, roomId, checkIn, checkOut, numberOfGuests, numberOfNights, totalPrice, status);
-        return reservationRepository.saveReservationRepository(reservation);
+        PaymentStatus paymentStatus = (paymentMethod == PaymentMethod.cash) ? PaymentStatus.PENDING : PaymentStatus.PAID;
+
+        Payment payment = new Payment(UUID.randomUUID(), reservationId, totalPrice, paymentMethod, paymentStatus, null);
+
+
+        connection.setAutoCommit(false);
+        try {
+            boolean reservationSaved = reservationRepository.saveReservationRepository(reservation);
+            if (!reservationSaved) {
+                connection.rollback();
+                return false;
+            }
+            boolean paymentSaved = paymentRepository.save(payment);
+            if (!paymentSaved) {
+                connection.rollback();
+                return false;
+            }
+            connection.commit();
+            return true;
+        } catch (SQLException e) {
+            connection.rollback();
+            e.printStackTrace();
+            return false;
+        } finally {
+            connection.setAutoCommit(true);
+        }
     }
 
     public List<Reservation> allReservationsUserService(User user) {
@@ -112,21 +148,21 @@ public class ReservationService {
         return reservationRepository.updateReservationRepository(codeReservation, roomNumber, numberOfGuests, totalPrice);
     }
 
-    public boolean updateReservationStatuService(String reservationCode,ReservationStatus newStatu ){
+    public boolean updateReservationStatuService(String reservationCode, ReservationStatus newStatu) {
         Reservation reservation = reservationRepository.findReservationsByCode(reservationCode);
-        if (reservation == null){
+        if (reservation == null) {
             System.out.println("cette reservation n'exist pas ");
             return false;
         }
-        if (reservation.getStatus() == newStatu){
-            System.out.println("cette reservation a ete deja dans ce satau "+newStatu);
+        if (reservation.getStatus() == newStatu) {
+            System.out.println("cette reservation a ete deja dans ce satau " + newStatu);
             return false;
         }
-        return reservationRepository.updateReservationStatus(reservationCode,newStatu);
+        return reservationRepository.updateReservationStatus(reservationCode, newStatu);
     }
 
-    public List<Reservation> AllReservationService(){
-       return reservationRepository.findAll();
+    public List<Reservation> AllReservationService() {
+        return reservationRepository.findAll();
     }
 
 
