@@ -1,7 +1,10 @@
 package util;
 
 import model.Reservation;
+import model.Room;
 import model.enums.ReservationStatus;
+import model.enums.RoomStatus;
+import model.enums.RoomType;
 
 import java.math.BigDecimal;
 import java.sql.PreparedStatement;
@@ -9,6 +12,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 public class ReservationUtils {
@@ -28,37 +33,25 @@ public class ReservationUtils {
     }
     public static Reservation mapReservation(ResultSet resultSet) throws SQLException {
         UUID id = resultSet.getObject("id", UUID.class);
-        String reservationCode =
-                resultSet.getString("reservationCode");
-        UUID userId =
-                resultSet.getObject("user_id", UUID.class);
-        UUID roomId =
-                resultSet.getObject("room_id", UUID.class);
-        int numberOfGuests =
-                resultSet.getInt("numberOfGuests");
-        LocalDate checkIn =
-                resultSet.getObject("check_in", LocalDate.class);
-        LocalDate checkOut =
-                resultSet.getObject("check_out", LocalDate.class);
-        long numberOfNights =
-                ChronoUnit.DAYS.between(checkIn, checkOut);
-        BigDecimal totalPrice =
-                resultSet.getBigDecimal("total_amount");
-        ReservationStatus status =
-                ReservationStatus.valueOf(
-                        resultSet.getString("reservationStatus")
-                );
-        return new Reservation(
-                id,
-                reservationCode,
-                userId,
-                roomId,
-                checkIn,
-                checkOut,
-                numberOfGuests,
-                numberOfNights,
-                totalPrice,
-                status
-        );
+        String reservationCode = resultSet.getString("reservationCode");
+        UUID userId = resultSet.getObject("user_id", UUID.class);
+        UUID roomId = resultSet.getObject("room_id", UUID.class);
+        int numberOfGuests = resultSet.getInt("numberOfGuests");
+        LocalDate checkIn = resultSet.getObject("check_in", LocalDate.class);
+        LocalDate checkOut = resultSet.getObject("check_out", LocalDate.class);
+        long numberOfNights = ChronoUnit.DAYS.between(checkIn, checkOut);
+        BigDecimal totalPrice = resultSet.getBigDecimal("total_amount");
+        ReservationStatus status = ReservationStatus.valueOf(resultSet.getString("reservationStatus"));
+        return new Reservation(id, reservationCode, userId, roomId, checkIn, checkOut, numberOfGuests, numberOfNights, totalPrice, status);
     }
+
+
+    public static List<Reservation> allReservations(ResultSet resultSet) throws SQLException {
+        List<Reservation> reservations = new ArrayList<>();
+        while (resultSet.next()){
+            reservations.add(mapReservation(resultSet));
+        }
+        return reservations;
+    }
+
 }

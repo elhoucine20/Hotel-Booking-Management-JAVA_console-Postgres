@@ -2,6 +2,7 @@ package controller;
 
 import model.Reservation;
 import model.User;
+import model.enums.ReservationStatus;
 import repository.impl.RoomRepository;
 import service.ReservationService;
 import util.InputUtils;
@@ -73,6 +74,52 @@ public class ReservationController {
             }
         } catch (Exception e) {
             System.out.println(e.getMessage());
+        }
+    }
+
+
+    public void updateReservationStatuController(Scanner scanner){
+
+        try {
+            String code = InputUtils.lireString(scanner,"saisie le code de reservation : ");
+            ReservationStatus statu = null;
+            do {
+                System.out.println("choisir la nouvelle statu :");
+                System.out.println("1- CONFIRMED");
+                System.out.println("2- CANCELLED");
+                System.out.println("3- COMPLETED");
+
+                int choix = InputUtils.lireInt(scanner,"");
+
+                switch (choix){
+                    case 1: statu = ReservationStatus.CONFIRMED; break;
+                    case 2: statu = ReservationStatus.CANCELLED; break;
+                    case 3: statu = ReservationStatus.COMPLETED; break;
+                    default:
+                        System.out.println("Votre choix n'exist pas !!"); break;
+                }
+            }while (statu==null);
+            if (reservationService.updateReservationStatuService(code,statu))
+                System.out.println("Reservation statu updated whith success");
+            else
+                System.out.println("impossible de modifier le statu de cette reservation !!");
+        }catch (Exception e){
+            System.out.println(e.getMessage());
+        }
+    }
+
+    public void allReservationsController() {
+        List<Reservation> reservations = reservationService.AllReservationService();
+        System.out.println("========== TOUTES LES RESERVATIONS ==========");
+        if (reservations.isEmpty()) {
+            System.out.println("Aucune reservation trouver.");
+            return;
+        }
+        for (Reservation reservation : reservations) {
+            System.out.println("Code : " + reservation.getReservationCode() + " | User : " + reservation.getUserId()
+                    + " | Room : " + reservation.getRoom_id() + " | Check-in : " + reservation.getCheckIn() + " | Check-out : "
+                    + reservation.getCheckOut() + " | Guests : " + reservation.getNumberOfGuests() + " | Nuits : "
+                    + reservation.getNumberOfNights() + " | Total : " + reservation.getTotalPrice()+ " | Status : " + reservation.getStatus());
         }
     }
 }

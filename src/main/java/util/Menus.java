@@ -44,10 +44,8 @@ public class Menus {
             int choixBeforLogin = scan.nextInt();
 
             switch (choixBeforLogin){
-                case 1: roomController.availableRoomsController();
-                     break;
-                case 2: roomController.allRoomsController();
-                     break;
+                case 1: roomController.availableRoomsController();break;
+                case 2: roomController.allRoomsController();break;
                 case 3: reservationController.createReservationController(scan,user);break;
                 case 4: reservationController.allReservationsUserController(user);break;
                 case 5: reservationController.updateReservationController(scan,user);break;
@@ -99,7 +97,9 @@ public class Menus {
         }, 0, 23, TimeUnit.HOURS);
 
     }
-*/
+
+ */
+
 
 
     public static void menuAdmin(Scanner scan, User user) throws Exception {
@@ -113,19 +113,18 @@ public class Menus {
             System.out.println("4. All Rooms");
             System.out.println("5. Update Reservation");
             System.out.println("6. Update profile");
-            System.out.println("7. Change password");
+            System.out.println("7. All Reservations ");
             System.out.println("8. Logout");
             System.out.println("0. Exit");
             int choixBeforLogin = scan.nextInt();
 
             switch (choixBeforLogin){
-                case 1:
-                    roomController.createRoomController(scan,user); break;
-                case 2:  roomController.updateRoomController(scan,user); break;
+                case 1: roomController.createRoomController(scan,user); break;
+                case 2: roomController.updateRoomController(scan,user); break;
                 case 4: roomController.allRoomsController(); break;
-                case 5:  System.out.println("update reservarion statu ");break;
-                case 6:  authController.updateProfileController(scan,user);break;
-                case 7:  System.out.println("change password");break;
+                case 5: reservationController.updateReservationStatuController(scan);break;
+                case 6: authController.updateProfileController(scan,user);break;
+                case 7: reservationController.allReservationsController();break;
                 case 8: System.out.println("Logout"); isTrue = false; Menus.menuAuth(scan) ; break;
                 case 0: System.out.println("Exit"); isTrue = false; break;
                 default:

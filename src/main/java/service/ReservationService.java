@@ -111,6 +111,25 @@ public class ReservationService {
         // update reservation
         return reservationRepository.updateReservationRepository(codeReservation, roomNumber, numberOfGuests, totalPrice);
     }
+
+    public boolean updateReservationStatuService(String reservationCode,ReservationStatus newStatu ){
+        Reservation reservation = reservationRepository.findReservationsByCode(reservationCode);
+        if (reservation == null){
+            System.out.println("cette reservation n'exist pas ");
+            return false;
+        }
+        if (reservation.getStatus() == newStatu){
+            System.out.println("cette reservation a ete deja dans ce satau "+newStatu);
+            return false;
+        }
+        return reservationRepository.updateReservationStatus(reservationCode,newStatu);
+    }
+
+    public List<Reservation> AllReservationService(){
+       return reservationRepository.findAll();
+    }
+
+
 /*
     public void createReservationService(RoomRepository roomRepository, User user, String roomNumber, int numberOfGuests, String dateDebut
             , String dateFin){
@@ -217,7 +236,7 @@ public class ReservationService {
         }
     }
 
-    
+
  */
 
 }

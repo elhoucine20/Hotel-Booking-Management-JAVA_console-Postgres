@@ -3,6 +3,7 @@ package repository;
 import db.DatabaseConnection;
 import model.Reservation;
 import model.User;
+import model.enums.ReservationStatus;
 import repository.impl.ReservationRepository;
 import util.ReservationUtils;
 
@@ -10,6 +11,7 @@ import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.Statement;
 import java.time.LocalDate;
 import java.util.*;
 
@@ -97,8 +99,17 @@ public class JdbcReservationRepository implements ReservationRepository {
     }
 
     @Override
-    public Map<UUID, Reservation> findAll() {
-        return Map.of();
+    public List<Reservation> findAll() {
+
+        String sql = "SELECT * FROM reservations";
+        try (Statement statement = connection.createStatement()){
+
+            ResultSet resultSet = statement.executeQuery(sql);
+            return ReservationUtils.allReservations(resultSet);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return List.of();
     }
 
     @Override
@@ -154,5 +165,22 @@ public class JdbcReservationRepository implements ReservationRepository {
                 "Impossible de générer le code de réservation"
         );
     }
+
+    @Override
+    public boolean updateReservationStatus(String reservationCode, ReservationStatus status) {
+
+        String sql = "UPDATE reservations SET reservationStatus = ? WHRE reservationCode = ?";
+
+        try (PreparedStatement preparedStatement = connection.prepareStatement(sql)){
+            preparedStatement.setString(1,status.name());
+            preparedStatement.setString(2,reservationCode);
+            int rows = preparedStatement.executeUpdate();
+            return rows == 1;
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return false;
+    }
+
 
 }

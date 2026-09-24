@@ -2,6 +2,7 @@ package repository.impl;
 
 import model.Reservation;
 import model.User;
+import model.enums.ReservationStatus;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -19,7 +20,8 @@ public interface ReservationRepository {
 
 
     public Reservation findReservationsByCode(String code);
-    public  Map<UUID,Reservation> findAll();
+    public  List<Reservation> findAll();
     public Map<LocalDate,LocalDate> findLesDatesReservationsByRoom(String roomNumber);
     public String generateReservationCode();
+    public boolean updateReservationStatus(String reservationCode, ReservationStatus status);
 }
