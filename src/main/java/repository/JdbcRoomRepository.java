@@ -22,11 +22,8 @@ public class JdbcRoomRepository implements repository.impl.RoomRepository {
 
     @Override
     public boolean save(Room room) {
-
         String sql = "INSERT INTO rooms (id, roomNumber, user_id, roomType, pricePerNight, roomStatus, capacity) values(?,?,?,?,?,?,?)";
-
         try (PreparedStatement statement = connection.prepareStatement(sql)) {
-
             int rows = RoomUtils.saveRoomUtil(statement,room);
             return rows == 1;
         } catch (Exception e) {
@@ -37,7 +34,6 @@ public class JdbcRoomRepository implements repository.impl.RoomRepository {
 
     @Override
     public Optional<Room> findByNumber(String roomNumbre){
-
         String sql = "SELECT * FROM rooms WHERE roomNumber = ?";
         try (PreparedStatement preparedStatement = connection.prepareStatement(sql)){
             preparedStatement.setString(1,roomNumbre);
@@ -52,10 +48,8 @@ public class JdbcRoomRepository implements repository.impl.RoomRepository {
 
     @Override
     public List<Room> findAll() {
-
         String sql = "SELECT * FROM rooms";
         try (PreparedStatement preparedStatement = connection.prepareStatement(sql)){
-
             ResultSet resultSet = preparedStatement.executeQuery();
             return RoomUtils.allRooms(resultSet);
         }catch (Exception e){e.printStackTrace();return List.of();}
@@ -94,9 +88,7 @@ public class JdbcRoomRepository implements repository.impl.RoomRepository {
 
     public String generateRoomNumber(){
         String sql ="SELECT nextval('room_number_seq')";
-
         try (PreparedStatement preparedStatement = connection.prepareStatement(sql)){
-
             ResultSet resultSet = preparedStatement.executeQuery();
             if (resultSet.next()){
                 long number = resultSet.getLong(1);

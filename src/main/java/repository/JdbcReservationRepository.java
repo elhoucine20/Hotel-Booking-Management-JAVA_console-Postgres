@@ -20,25 +20,19 @@ public class JdbcReservationRepository implements ReservationRepository {
     Connection connection = DatabaseConnection.getInstance().getConnection();
     @Override
     public List<Reservation> allReservationsUser(User user) {
-        List<Reservation> reservations = new ArrayList<>();
         String sql = "SELECT * FROM reservations WHERE user_id = ? ";
         try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
             preparedStatement.setObject(1, user.getId());
             ResultSet resultSet = preparedStatement.executeQuery();
-            while (resultSet.next()) {
-                // prochaine étape : récupérer les données
-                Reservation reservation = ReservationUtils.mapReservation(resultSet);
-                reservations.add(reservation);
-            }
+                return ReservationUtils.allReservations(resultSet);
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return reservations;
+        return List.of();
     }
 
     @Override
     public boolean saveReservationRepository(Reservation reservation) {
-
         String sql = "INSERT INTO reservations(id,reservationCode,user_id," +
                 " room_id,numberOfGuests,check_in,check_out,reservationStatus,total_amount) " +
                 "VALUES (?,?,?,?,?,?,?,?,?)";
@@ -51,7 +45,6 @@ public class JdbcReservationRepository implements ReservationRepository {
     @Override
     public boolean cancelReservationRepository(String codeReservation, User user){
         String sql = "UPDATE reservations SET reservationStatus = 'CANCELLED' WHERE reservationCode = ? AND user_id = ?";
-
         try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
             preparedStatement.setString(1, codeReservation);
             preparedStatement.setObject(2, user.getId());
@@ -65,7 +58,6 @@ public class JdbcReservationRepository implements ReservationRepository {
 
     @Override
     public boolean updateReservationRepository(String code,String roomNumber, int numberOfGuests, BigDecimal totalPrice){
-
         String sql = "UPDATE reservations r SET room_id = room.id, numberOfGuests = ?, total_amount = ? " +
                 "FROM rooms room WHERE r.reservationCode = ? AND room.roomNumber = ?";
 
@@ -84,7 +76,6 @@ public class JdbcReservationRepository implements ReservationRepository {
 
     @Override
     public Reservation findReservationsByCode(String code) {
-
         String sql = "SELECT * FROM reservations WHERE reservationCode = ?";
         try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
             preparedStatement.setString(1, code);
@@ -100,10 +91,8 @@ public class JdbcReservationRepository implements ReservationRepository {
 
     @Override
     public List<Reservation> findAll() {
-
         String sql = "SELECT * FROM reservations";
         try (Statement statement = connection.createStatement()){
-
             ResultSet resultSet = statement.executeQuery(sql);
             return ReservationUtils.allReservations(resultSet);
         }catch (Exception e){
@@ -114,23 +103,16 @@ public class JdbcReservationRepository implements ReservationRepository {
 
     @Override
     public Map<LocalDate, LocalDate> findLesDatesReservationsByRoom(String roomNumber) {
-
         Map<LocalDate, LocalDate> reservations = new HashMap<>();
-
-        String sql = "SELECT r.* FROM reservations r " +
-                "JOIN rooms room ON r.room_id = room.id " +
-                "WHERE room.roomNumber = ? " +
+        String sql = "SELECT r.* FROM reservations r JOIN rooms room ON r.room_id = room.id WHERE room.roomNumber = ? " +
                 "AND r.reservationStatus = 'CONFIRMED'";
 
-        try (PreparedStatement preparedStatement =
-                     connection.prepareStatement(sql)) {
+        try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
             preparedStatement.setString(1, roomNumber);
             ResultSet resultSet = preparedStatement.executeQuery();
             while (resultSet.next()) {
-                LocalDate checkIn =
-                        resultSet.getObject("check_in", LocalDate.class);
-                LocalDate checkOut =
-                        resultSet.getObject("check_out", LocalDate.class);
+                LocalDate checkIn = resultSet.getObject("check_in", LocalDate.class);
+                LocalDate checkOut = resultSet.getObject("check_out", LocalDate.class);
                 reservations.put(checkIn, checkOut);
             }
             return reservations;
@@ -141,36 +123,22 @@ public class JdbcReservationRepository implements ReservationRepository {
     }
 
     public String generateReservationCode() {
-
         String sql = "SELECT nextval('reservation_code_seq')";
-
-        try (PreparedStatement preparedStatement =
-                     connection.prepareStatement(sql)) {
-
-            ResultSet resultSet =
-                    preparedStatement.executeQuery();
-
+        try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+            ResultSet resultSet = preparedStatement.executeQuery();
             if (resultSet.next()) {
-
                 long number = resultSet.getLong(1);
-
                 return String.format("RES-%04d", number);
             }
-
         } catch (Exception e) {
             e.printStackTrace();
         }
-
-        throw new RuntimeException(
-                "Impossible de générer le code de réservation"
-        );
+        throw new RuntimeException("impossible de generer le code de reservation");
     }
 
     @Override
     public boolean updateReservationStatus(String reservationCode, ReservationStatus status) {
-
         String sql = "UPDATE reservations SET reservationStatus = ? WHRE reservationCode = ?";
-
         try (PreparedStatement preparedStatement = connection.prepareStatement(sql)){
             preparedStatement.setString(1,status.name());
             preparedStatement.setString(2,reservationCode);

@@ -1,26 +1,27 @@
 package service;
 
 import db.DatabaseConnection;
-import model.Payment;
-import model.Reservation;
-import model.Room;
-import model.User;
+import model.*;
 import model.enums.PaymentMethod;
 import model.enums.PaymentStatus;
 import model.enums.ReservationStatus;
 import model.enums.RoomStatus;
+import repository.JdbcInvoiceRepository;
 import repository.JdbcPaymentRepository;
 import repository.JdbcReservationRepository;
 import repository.JdbcRoomRepository;
+import repository.impl.InvoiceRepository;
 import repository.impl.PaymentRepository;
 import repository.impl.ReservationRepository;
 import repository.impl.RoomRepository;
 import util.ValidationUtils;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.time.DateTimeException;
+import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
@@ -34,6 +35,8 @@ public class ReservationService {
     private ReservationRepository reservationRepository = new JdbcReservationRepository();
     private PaymentRepository paymentRepository = new JdbcPaymentRepository();
     private Connection connection = DatabaseConnection.getInstance().getConnection();
+    private InvoiceRepository invoiceRepository = new JdbcInvoiceRepository();
+    private InvoiceService invoiceService = new InvoiceService();
 
     public boolean createReservationService(User user, String roomNumber, int numberOfGuests, String dateDebut, String dateFin, PaymentMethod paymentMethod) throws SQLException {
 
@@ -48,7 +51,7 @@ public class ReservationService {
             return false;
         }
         if (numberOfGuests <= 0 || numberOfGuests > room.getCapacity()) {
-            System.out.println("Le nombre de personnes n'adapte  pas avec la capacity de room !!");
+            System.out.println("number of guests  n'adapte  pas avec la capacity de room !!");
             return false;
         }
         LocalDate checkIn = ValidationUtils.parseDate(dateDebut);
@@ -69,7 +72,10 @@ public class ReservationService {
                 return false;
             }
         }
-        BigDecimal totalPrice = room.getPricePerNight().multiply(BigDecimal.valueOf(numberOfNights));
+        LocalDate reservationDate = LocalDate.now();
+
+        BigDecimal totalPrice = this.calculerPrice(reservationDate,checkIn,checkOut,room.getPricePerNight());
+
         UUID reservationId = UUID.randomUUID();
         UUID userId = user.getId();
         UUID roomId = room.getId();
@@ -77,9 +83,7 @@ public class ReservationService {
         String reservationCode = reservationRepository.generateReservationCode();
         Reservation reservation = new Reservation(reservationId, reservationCode, userId, roomId, checkIn, checkOut, numberOfGuests, numberOfNights, totalPrice, status);
         PaymentStatus paymentStatus = (paymentMethod == PaymentMethod.cash) ? PaymentStatus.PENDING : PaymentStatus.PAID;
-
         Payment payment = new Payment(UUID.randomUUID(), reservationId, totalPrice, paymentMethod, paymentStatus, null);
-
 
         connection.setAutoCommit(false);
         try {
@@ -93,6 +97,13 @@ public class ReservationService {
                 connection.rollback();
                 return false;
             }
+            Invoice invoice = invoiceService.createInvoice(payment);
+            boolean invoiceSaved = invoiceRepository.save(invoice);
+            if (!invoiceSaved) {
+                connection.rollback();
+                return false;
+            }
+
             connection.commit();
             return true;
         } catch (SQLException e) {
@@ -103,6 +114,48 @@ public class ReservationService {
             connection.setAutoCommit(true);
         }
     }
+
+    private BigDecimal calculerPrice(LocalDate reservationDate, LocalDate checkIn, LocalDate checkOut, BigDecimal priceForNight){
+        long numberOfNights = ChronoUnit.DAYS.between(checkIn, checkOut);
+
+        BigDecimal totalPrice = BigDecimal.ZERO;
+        LocalDate currentDate = checkIn;
+        while (currentDate.isBefore(checkOut)) {
+            //BigDecimal priceForNight = pricePerNight;
+            int month = currentDate.getMonthValue();
+            if (month == 7 || month == 8) {
+                priceForNight = priceForNight.multiply(new BigDecimal("1.30"));
+            }else if (month == 11 || month == 12 || month == 1  || month == 2){
+                priceForNight = priceForNight.multiply(new BigDecimal("0.85"));
+            }
+
+            DayOfWeek day = currentDate.getDayOfWeek();
+            if (day == DayOfWeek.FRIDAY || day == DayOfWeek.SATURDAY){
+                priceForNight = priceForNight.multiply(new BigDecimal("1.15"));
+            }
+            totalPrice = totalPrice.add(priceForNight);
+            currentDate = currentDate.plusDays(1);
+        }
+        if (numberOfNights >= 14) {
+            totalPrice = totalPrice.multiply(new BigDecimal("0.85"));
+        } else if (numberOfNights >= 7) {
+            totalPrice = totalPrice.multiply(new BigDecimal("0.90"));
+        }
+        long daysBeforeCheckIn = ChronoUnit.DAYS.between(reservationDate, checkIn);
+        if (daysBeforeCheckIn >= 30) {
+            totalPrice = totalPrice.multiply(new BigDecimal("0.95"));
+        }else if (daysBeforeCheckIn <= 3) {
+            totalPrice = totalPrice.multiply(new BigDecimal("1.10"));
+        }
+
+        System.out.println("Prix avant reductions : " + totalPrice);
+        System.out.println("Nombre de nuits : " + numberOfNights);
+        System.out.println("Jours avant check-in : " + daysBeforeCheckIn);
+
+        return totalPrice;
+    }
+
+    private void checkDate(LocalDate checkIn, LocalDate checkOut){}
 
     public List<Reservation> allReservationsUserService(User user) {
         return reservationRepository.allReservationsUser(user);
@@ -164,6 +217,7 @@ public class ReservationService {
     public List<Reservation> AllReservationService() {
         return reservationRepository.findAll();
     }
+
 
 
 /*

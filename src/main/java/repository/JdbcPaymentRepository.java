@@ -18,11 +18,7 @@ public class JdbcPaymentRepository implements PaymentRepository {
     public boolean save(Payment payment) {
         String sql = "INSERT INTO payments (id,reservation_id,amount,payment_method,payment_status) VALUES (?,?,?,?,?)";
         try (PreparedStatement statement = connection.prepareStatement(sql)){
-            statement.setObject(1,payment.getId());
-            statement.setObject(2,payment.getReservation_id());
-            statement.setBigDecimal(3,payment.getAmount());
-            statement.setString(4,payment.getPayment_method().name());
-            statement.setString(5,payment.getPaymentStatus().name());
+            PaymentUtils.mapToInsertPayment(statement,payment);
             return  statement.executeUpdate() == 1;
         }catch (Exception e){e.printStackTrace();}
         return false;
