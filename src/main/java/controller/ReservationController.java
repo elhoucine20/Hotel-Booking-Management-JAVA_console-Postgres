@@ -8,6 +8,9 @@ import repository.impl.RoomRepository;
 import service.ReservationService;
 import util.InputUtils;
 import util.Menus;
+import util.payment.PaymentCash;
+import util.payment.PaymentPaypal;
+import util.payment.PaymentStrategy;
 
 import java.util.List;
 import java.util.Scanner;
@@ -27,11 +30,11 @@ public class ReservationController {
             System.out.println("1. CASH");
             System.out.println("2. PAYPAL");
             int choix = InputUtils.lireInt(scanner, "Saisie votre choix : ");
-            PaymentMethod paymentMethod;
+            PaymentStrategy paymentMethod;
             if (choix == 1) {
-                paymentMethod = PaymentMethod.cash;
+                paymentMethod = new PaymentCash();
             } else if (choix == 2) {
-                paymentMethod = PaymentMethod.paypal;
+                paymentMethod = new PaymentPaypal();
             } else {
                 System.out.println("votre choix invalide !");
                 return;

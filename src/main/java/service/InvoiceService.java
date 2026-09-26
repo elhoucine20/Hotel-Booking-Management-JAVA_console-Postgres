@@ -13,7 +13,7 @@ public class InvoiceService {
 
     private InvoiceRepository invoiceRepository = new JdbcInvoiceRepository();
 
-    public Invoice createInvoice(Payment payment){
+    public Invoice createInvoiceService(Payment payment){
         BigDecimal totalTtc = payment.getAmount();
         BigDecimal subtotalHt = totalTtc.divide(BigDecimal.valueOf(1.20),2, RoundingMode.HALF_UP);
         BigDecimal vatAmount = totalTtc.subtract(subtotalHt);

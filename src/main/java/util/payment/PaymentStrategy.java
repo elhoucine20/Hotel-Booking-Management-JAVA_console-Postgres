@@ -1,7 +1,9 @@
 package util.payment;
 
+import model.enums.PaymentStatus;
+
 import java.math.BigDecimal;
 
 public interface PaymentStrategy {
-    public void paye(BigDecimal amount);
+    public PaymentStatus paye(BigDecimal amount);
 }
